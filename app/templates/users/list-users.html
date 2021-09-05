@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    {% include "navbar.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {% if current_user %}
+                <h5 class="display-5">List Users</h5>
+                <div class="text-success font-weight-bold">
+                    {% if msg %}
+                        <div class="badge bg-success text-wrap font-weight-bold" style="font-size: large;">
+                            {{ msg }}
+                        </div>
+                    {% endif %}
+                </div>
+                </div>
+                {% if current_user.role == 'Admin' or current_user.is_superuser %}
+                    <form method="POST" action="/upload-data">
+                        <button type="submit" class="btn btn-primary">Upload data</button>
+                    </form>
+                {% endif %}
+                <div class="row my-5 offset-2">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Id</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Role</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.role.value }}</td>
+                            {% if current_user.role == 'Admin' or current_user.is_superuser %}
+                                <td>
+                                    <form method="GET" action="/users/{{ user.id }}">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm"
+                                            onclick="delete_user({{ user.id }});setTimeout('window.location.href=window.location.href', 100)">
+                                        Delete
+                                    </button>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% if current_user.role == 'Admin' or current_user.is_superuser %}
+                    <form method="GET" action="/users">
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+            </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+function delete_user(id) {
+    $.ajax({
+        url: '/users' + '/' + id,
+        type: 'DELETE',
+        success: function() {
+           ajaxGet();
+       }
+    });
+ }
+
+
+    </script>
+{% endblock %}
