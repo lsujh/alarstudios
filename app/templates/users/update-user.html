@@ -9,7 +9,7 @@
         <div class="row">
             <h5 class="display-5">Edit User</h5>
             <div class="text-danger font-weight-bold">
-                {% for error in errors %}
+                {% for error in form.errors %}
                     <li>{{ error }}</li>
                 {% endfor %}
             </div>

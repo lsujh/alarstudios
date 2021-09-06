@@ -57,7 +57,7 @@ def create_new_user(user: UserCreate, db: Session) -> bool:
         db.add(user)
         db.commit()
         db.refresh(user)
-    except:
+    except HTTPException:
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST,
             detail="Bad request",
@@ -68,11 +68,17 @@ def create_new_user(user: UserCreate, db: Session) -> bool:
 def update_user(id: int, user: UserAddUpdate, db: Session) -> bool:
     try:
         _user = get_user(id=id, db=db)
+        other_user = get_user_by_email(email=user.email, db=db)
+        if other_user and _user.id != other_user.id:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail="Duplicated email",
+            )
         _user.email = user.email
         _user.role = user.role
         db.commit()
         db.refresh(_user)
-    except:
+    except HTTPException:
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST,
             detail="Bad request",
@@ -85,7 +91,7 @@ def delete_user(id: int, db: Session) -> bool:
         user = get_user(id=id, db=db)
         db.delete(user)
         db.commit()
-    except:
+    except HTTPException:
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST,
             detail="Bad request",

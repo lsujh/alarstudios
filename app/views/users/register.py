@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from starlette.exceptions import HTTPException
 from starlette.responses import RedirectResponse, Response
 
 from app.constants import BASE_PATH
@@ -29,7 +30,7 @@ async def register(request: Request, db: Session = Depends(get_db)) -> Response:
             )
             create_new_user(user=user, db=db)
             return RedirectResponse(request.url_for('login'), status_code=302)
-        except:
+        except HTTPException:
             form.__dict__.get("errors").append("Duplicate or invalid email")
             return templates.TemplateResponse("users/register.html", form.__dict__)
     return templates.TemplateResponse("users/register.html", form.__dict__)

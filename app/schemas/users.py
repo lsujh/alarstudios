@@ -6,12 +6,12 @@ from app.enums.roles import Roles
 
 
 class UserBase(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr]
     is_superuser: bool = False
 
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    email: Optional[EmailStr]
     password: str
 
 

@@ -44,7 +44,8 @@ async def update(request: Request, id: int, db: Session = Depends(get_db)) -> Re
             user = UserAddUpdate(email=form.email, role=form.role)
             update_user(id=id, db=db, user=user)
             return RedirectResponse(request.url_for('list'), status_code=302)
-        except:
+        except HTTPException:
+            form.__dict__.get("errors").append("Duplicate email")
             return templates.TemplateResponse("users/update-user.html", {'request': request, 'form': form})
     return templates.TemplateResponse("users/update-user.html", {'request': request, 'form': form})
 
@@ -66,7 +67,7 @@ async def add_user(request: Request, db: Session = Depends(get_db)) -> Response:
             )
             create_new_user(user=user, db=db)
             return RedirectResponse(request.url_for('list'), status_code=302)
-        except:
+        except HTTPException:
             form.__dict__.get("errors").append("Duplicate email")
             return templates.TemplateResponse("users/add-user.html", form.__dict__)
     return templates.TemplateResponse("users/add-user.html", form.__dict__)

@@ -10,3 +10,9 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_superuser = Column(Boolean(), default=False)
     role = Column(Enum(Roles), default='manager')
+
+    def __init__(self, email, hashed_password, is_superuser, role):
+        self.email = email
+        self.hashed_password = hashed_password
+        self.is_superuser = is_superuser
+        self.role = role
